@@ -1,16 +1,13 @@
 package ru.yandexpraktikum.stellarburgers.pageobjects;
 
 import com.codeborne.selenide.Condition;
-
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import io.qameta.allure.Step;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
-import java.time.Duration;
-
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.page;
 import static com.codeborne.selenide.WebDriverRunner.url;
 
@@ -19,7 +16,7 @@ public class MainPage{
     public static final String MAIN_URL = "https://stellarburgers.nomoreparties.site/";
 
     //кольцо загрузки
-    @FindBy(how = How.CLASS_NAME, using = ".//div[@class='Modal_modal_overlay__x2ZCr'][2]")
+    @FindBy(how = How.XPATH, using = ".//div[@class='Modal_modal_overlay__x2ZCr'][2]")
     public SelenideElement loading;
 
     //оверлей модального окна
@@ -27,7 +24,7 @@ public class MainPage{
     public SelenideElement overlay;
 
     //кнопка Личный кабинет в хедере
-    @FindBy(how = How.XPATH, using = ".//a//p[text()='Личный Кабинет']")
+    @FindBy(how = How.XPATH, using = ".//p[contains (text(), 'Личный Кабинет')]")
     public SelenideElement buttonAccount;
 
     //кнопка Войти в аккаунт
@@ -63,40 +60,47 @@ public class MainPage{
     public SelenideElement headingMakeBurger;
 
     //кликнуть кнопку Войти в аккаунт
+    @Step("Клик по кнопке Войти в аккаунт Главной страницы")
     public LoginPage clickButtonLogin(){
         Selenide.executeJavaScript("return arguments[0].click();", buttonLogin);
         return page(LoginPage.class);}
 
     //кликнуть кнопку Личный кабинет (неавторизованный пользователь)
+    @Step("Клик по кнопке Личный кабинет неавторизованным пользователем")
     public LoginPage clickButtonAccount(){
-        Selenide.executeJavaScript("return arguments[0].click();", buttonAccount);
+        buttonAccount.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
         return page(LoginPage.class);}
 
     //кликнуть кнопку Личный кабинет (авторизованный пользователь)
+    @Step("Клик по кнопке Личный кабинет авторизованным пользователем")
     public ProfilePage clickButtonAccountAfterLogin(){
         buttonAccount.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
         return page(ProfilePage.class);}
 
     //кликнуть вкладку Булки
+    @Step("Клик по вкладке Булки")
     public MainPage clickLinkBuns(){
-        overlay.shouldNotBe(Condition.visible, Duration.ofSeconds(100));
-        linkBuns.shouldBe(Condition.visible).click();
+        linkBuns.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
+//                .shouldNotHave(cssValue("color", "var(--text-primary-color)")).click();
         return this;}
 
     //кликнуть вкладку Соусы
+    @Step("Клик по вкладке Соусы")
     public MainPage clickLinkSauces(){
-        overlay.shouldNotBe(Condition.visible, Duration.ofSeconds(100));
-        linkSauces.shouldBe(Condition.visible).click();
+        linkSauces.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
+//                .shouldNotHave(cssValue("color", "var(--text-primary-color)")).click();
         return this;}
 
     //кликнуть вкладку Начинки
+    @Step("Клик по вкладке Начинки")
     public MainPage clickLinkFillings(){
-        overlay.shouldNotBe(Condition.visible, Duration.ofSeconds(100));
-        linkFillings.shouldBe(Condition.visible).click();
+        linkFillings.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
+//                .shouldNotHave(cssValue("color", "var(--text-primary-color)")).click();
         return this;}
 
-    //пользователь авторизовался
-    public boolean isUserLogin(){
-        Selenide.sleep(2000);
+    @Step("Проверка загрузки Главной страницы")
+    public boolean isMainPageLoaded(){
+        loading.shouldBe(hidden);
+        headingMakeBurger.shouldBe(visible);
         return url().equals(MAIN_URL);}
 }

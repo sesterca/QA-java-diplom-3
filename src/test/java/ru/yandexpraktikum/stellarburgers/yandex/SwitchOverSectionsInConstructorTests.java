@@ -1,21 +1,14 @@
 package ru.yandexpraktikum.stellarburgers.yandex;
 
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 import ru.yandexpraktikum.stellarburgers.pageobjects.MainPage;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.open;
 
-public class SwitchOverSectionsInConstructorTests {
-
-    @Before
-    public void setUp(){
-        System.setProperty("webdriver.chrome.driver", "src/resources/yandexdriver.exe");
-        System.setProperty("selenide.timeout", "4000");
-    }
+public class SwitchOverSectionsInConstructorTests extends BaseTest {
 
     @Test
     @DisplayName("Проверка перехода к разделу Булки")

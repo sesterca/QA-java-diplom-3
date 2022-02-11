@@ -1,22 +1,18 @@
 package ru.yandexpraktikum.stellarburgers.yandex;
 
-import com.codeborne.selenide.Selenide;
+import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.DisplayName;
 import ru.yandexpraktikum.stellarburgers.com.UserOperations;
 import ru.yandexpraktikum.stellarburgers.pageobjects.LoginPage;
-import ru.yandexpraktikum.stellarburgers.pageobjects.MainPage;
-import ru.yandexpraktikum.stellarburgers.pageobjects.ProfilePage;
 
 import java.util.Map;
 
 import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.WebDriverRunner.url;
 
-public class UserLogoutTests {
+public class UserLogoutTests extends BaseTest {
 
     private UserOperations userOperations;
     public static String userEmail;
@@ -27,22 +23,18 @@ public class UserLogoutTests {
         userOperations = new UserOperations();
         Map<String, String> userData = userOperations.register();
         userEmail = userData.get("email");
-        userPassword = userData.get("password");
-        System.setProperty("webdriver.chrome.driver", "src/resources/yandexdriver.exe");}
+        userPassword = userData.get("password");}
 
     @After
-    public void deleteUser(){userOperations.delete();}
+    public void deleteUser(){
+        userOperations.delete();}
 
     @Test
     @DisplayName("Выход по кнопке Выйти в личном кабинете")
     public void userLogoutOnClickLogoutButtonAccountPageTest(){
-        MainPage mainPage = open(LoginPage.ACCOUNT_URL, LoginPage.class)
-                .setLoginForm(userEmail, userPassword);
-        Selenide.sleep(4000);
-        ProfilePage profilePage = mainPage.clickButtonAccountAfterLogin();
-        Selenide.sleep(4000);
-        profilePage.clickButtonLogout();
-        Selenide.sleep(4000);
-        Assert.assertTrue(url().equals(LoginPage.ACCOUNT_URL));
-    }
+        LoginPage loginPage = open(LoginPage.ACCOUNT_URL, LoginPage.class)
+                .setLoginForm(userEmail, userPassword)
+                .clickButtonAccountAfterLogin()
+                .clickButtonLogout();
+        Assert.assertTrue(loginPage.isLoginPageLoaded());}
 }

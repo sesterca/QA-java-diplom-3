@@ -1,20 +1,21 @@
 package ru.yandexpraktikum.stellarburgers.pageobjects;
 
 import com.codeborne.selenide.*;
+import io.qameta.allure.Step;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 
-import java.time.Duration;
-
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.page;
-import static com.codeborne.selenide.WebDriverRunner.url;
 
 public class RegisterPage {
 
     public static final String REGISTER_URL = "https://stellarburgers.nomoreparties.site/register";
+
+    //кольцо загрузки
+    @FindBy(how = How.XPATH, using = ".//div[@class='Modal_modal_overlay__x2ZCr'][2]")
+    public SelenideElement loading;
 
     //поле Имя формы регистрации
     @FindBy(how = How.XPATH, using = ".//form//div[label[text()='Имя']]/input")
@@ -29,7 +30,7 @@ public class RegisterPage {
     public SelenideElement inputPassword;
 
     //кнопка Зарегистрироваться формы регистрации
-    @FindBy(how = How.XPATH, using = ".//form//button[text()='Зарегистрироваться']")
+    @FindBy(how = How.XPATH, using = ".//form//button")
     public SelenideElement buttonRegister;
 
     //сообщение об ошибке ввода Некорректный пароль
@@ -53,31 +54,30 @@ public class RegisterPage {
         inputPassword.shouldBe(Condition.visible).setValue(RandomStringUtils.randomAlphabetic(5));}
 
     //кликнуть кнопку Зарегистрироваться формы регистрации
-    public void clickButtonRegister(){
-        buttonRegister.shouldBe(Condition.and("can be clicked", visible, enabled), Duration.ofSeconds(3000)).click();}
+    public LoginPage clickButtonRegister(){
+        buttonRegister.shouldBe(Condition.and("can be clicked", visible, enabled)).click();
+        return page(LoginPage.class);}
 
     //заполнить и отправить данные формы регистрации
+    @Step("Заполнение и отправка валидных данных формы регистрации пользователя")
     public LoginPage setRegistrationForm(){
         setInputName();
         setInputEmail();
         setInputPasswordValid();
-        Selenide.sleep(1000);
         clickButtonRegister();
+        inputName.should(disappear);
         return page(LoginPage.class);}
 
     //заполнить форму с невалидным паролем и получить ошибку Некорректный пароль
+    @Step("Заполнение и отправка формы регистрации пользователя с невалидным паролем")
     public RegisterPage setRegistrationFormWithInvalidPassword(){
         setInputName();
         setInputEmail();
         setInputPasswordInvalid();
         clickButtonRegister();
-        return page(RegisterPage.class);
+        return this;
     }
     //получить текст ошибки
     public String getErrorText() {
         return errorInvalidPassword.text();}
-
-    public boolean isUserRegistrationSuccess(){
-        Selenide.sleep(2000);
-        return url().equals(LoginPage.ACCOUNT_URL);}
 }
